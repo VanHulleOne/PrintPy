@@ -1,0 +1,57 @@
+decorators:
+	part 	# a list of one or more layers
+	layer 	# a list of regions and/or layers. outlines from all regions are not allowed to cross.
+			# their edges are allowed to overlap (That should be easy, just to check and let the results
+			# speak for themselves ;) ).
+	region 	# A single outline with an infill (infill could be one of three levels)
+	infill 	# list of lines within a given outline
+	outline	# Simple, closed, non-manifold, polygon
+	
+A region can have one of three infill levels:
+1) an actual infill which will be printed
+2) None - no infill will be printed
+3) ... (ellipsis) - transparent - the next outer infill will be used 
+
+variables:
+	solidityRatio
+	printSpeed
+	shiftX
+	shiftY
+	shiftZ
+	numLayers?	
+	layerHeight
+	sortType
+	
+	numShells
+	numBrims 	# Should numBrims be special and auto happen on only first layer? - Yes
+				# Should brims be applied to regions of infill level None? - Yes
+	
+	Infill:
+		designType
+		angle
+		pathWidth
+		trimAdjust
+		pattern
+	
+	Printer:
+		bedTemp
+		extruderTemp
+		nozzleDiameter
+		filamentDiameter
+		rapid
+		traverseRetract
+		maxFeedTravers
+		maxExtrudeSpeed
+		zClearance
+		approachFeedrate
+		extruderNumber???
+		
+Scope Levels:
+		global
+		part
+		layer
+		region
+		
+
+
+		
