@@ -1,11 +1,41 @@
+Abstract: 
+How do we compare 3D printed test specimens between research groups? An .STL does not
+provide enough information to actually print the part, G-code and voxels require a lot of
+lines and are difficult to human read, plus G-code is machine specific. What is required
+is a way to fully, clearly, and compactly describe both part geometry and printing
+parameters in a machine independent language.
+
+
+Language Goal:
+Provide an easily sharable documentation format for describing 3D printed parts which
+includes the desired printing parameters. When the program is run through its parser the output
+should be as printed geometry/parameter information. This information would then be run through
+a program which converts it to a machine specific language for printing.
+
+Def:
+As printed geometry: As printed geometry contains the information as to where material will
+	actually be placed when the part is printed. An .STL contains the information about the surface
+	of a part but if we choose a 25% infill we do not actually know where material will be placed inside
+	of the part. As printed geometry will contain that information. This differs from the actual tool path
+	in that the order in which the material is printed might not be determined (although pre-sorting may be
+	allowed) and it does not contain any of the approach, positionioning, and retract information.
+
+This language is designed to fully, clearly, and compactly describe a part which
+will be 3D printed in a layer by layer baisis (although a layer could be on a 3D curved surface) and the 
+user wants to define the printing parameters used for the regions which make up the part. The language is
+designed to be easily adjustable to any parameter inputs the user wishes to include with the geometry information
+and be flexible in which printing technology will be used. 
+
 decorators:
 	part 	# a list of one or more layers
 	layer 	# a list of regions and/or layers. outlines from all regions are not allowed to cross.
-			# their edges are allowed to overlap (That should be easy, just to check and let the results
+			# their edges are allowed to overlap (That should be easy, just don't to check and let the results
 			# speak for themselves ;) ).
 	region 	# A single outline with an infill (infill could be one of three levels)
 	infill 	# list of lines within a given outline
-	outline	# Simple, closed, non-manifold, polygon
+	boundry	# Simple, closed, non-manifold, polygon
+
+
 	
 A region can have one of three infill levels:
 1) an actual infill which will be printed
