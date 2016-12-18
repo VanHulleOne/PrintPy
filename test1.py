@@ -14,13 +14,23 @@ def b1():
     points = ((0,0), (2,0), (2,3))
     return points
 
-level.parameters(pathWidth = 0.5,
-               layerHeight = 0.2,
-               solidityRatio = 0.98,
-               shiftX = 50,
-               shiftY = 20,
-               numShells = 2,
-              )
+param1 = level.parameters(pathWidth = 0.5,
+                           layerHeight = 0.2,
+                           solidityRatio = 0.98,
+                           shiftX = 50,
+                           shiftY = 20,
+                           numShells = 2,
+                           )
+
+reg1 = level.region(boundry = b1, parameters = param1)
+
+#level.parameters(pathWidth = 0.5,
+#               layerHeight = 0.2,
+#               solidityRatio = 0.98,
+#               shiftX = 50,
+#               shiftY = 20,
+#               numShells = 2,
+#              )
 
 
              

@@ -30,16 +30,20 @@ def boundry(func):
     return inner
 
 def parameters(*args, **parameters):
-    global _parameters
-    _parameters = parameters
-#    print(_parameters)
+    return namedtuple('Parameters', parameters.keys())(**parameters)
 
-
-def region(*, boundry, parameters=None, **kwargs):
-    if parameters is None:
+def region(*, boundry, infill = True, parameters=None, **kwargs):
+    localParams = kwargs
+    try:
+        localParams.update(parameters._asdict())
+    except Exception:
         pass
-    print(boundry, parameters, kwargs)
-    return 'Worked'
+    return namedtuple('Region', 'boundry infill ' +
+                        ' '.join(localParams.keys()))(boundry=boundry,
+                                                        infill=infill,
+                                                        **localParams)
+
+
 
 #def region(*args, **localParams):
 #    def wrapper(func):
