@@ -29,7 +29,15 @@ def boundry(func):
     
     return inner
 
-def parameters(*args, **parameters):
+def layer(parameters=None, **kwargs):
+    localParams = kwargs
+    try:
+        localParams.update(parameters._asdict())
+    except Exception:
+        pass
+    
+
+def parameters(**parameters):
     return namedtuple('Parameters', parameters.keys())(**parameters)
 
 def region(*, boundry, infill = True, parameters=None, **kwargs):
