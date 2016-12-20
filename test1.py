@@ -14,6 +14,8 @@ def b1():
     points = ((0,0), (2,0), (2,3))
     return points
 
+infill1 = level.infill(pattern=(1,2), angle=45, spacing=0.5)
+
 param1 = level.parameters(pathWidth = 0.5,
                            layerHeight = 0.2,
                            solidityRatio = 0.98,

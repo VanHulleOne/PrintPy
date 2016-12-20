@@ -35,7 +35,15 @@ def layer(parameters=None, **kwargs):
         localParams.update(parameters._asdict())
     except Exception:
         pass
-    
+
+def infill(*, pattern, angle, spacing, designType=0):
+    maxLength = yield
+    # TODO: extend pattern to maxLength
+    # TODO: rotate pattern to angle
+    while True:
+        yield pattern
+        pattern = tuple(i+spacing for i in pattern)
+        
 
 def parameters(**parameters):
     return namedtuple('Parameters', parameters.keys())(**parameters)
