@@ -13,22 +13,34 @@ side = 7
 
 numLines = 0;
 
-colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
+colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet',
+          'blue violet', 'brown', 'burlywood', 'dark green', 'gold',
+          'lavender']
 
 color = cycle(colors)
 
-f = lambda : t.forward(side)
+a = lambda : t.forward(side)
 p = lambda : t.left(60)
 m = lambda : t.left(-60)
 b = lambda : t.forward(side)
 
-a = [f]
-b = [b]
+#a = lambda : print('a', end=', ')
+#b = lambda : print('b', end=', ')
+#m = lambda : print('m', end=', ')
+#p = lambda : print('p', end=', ')
+
+#a_seq = ('a','m','b','m','m','b','p','a','p','p','a','a','p','b','m')
+#b_seq = ('p','a','m','b','b','m','m','b','m','a','p','p','a','p','b')
+a_seq = (a,m,b,m,m,b,p,a,p,p,a,a,p,b,m)
+b_seq = (p,a,m,b,b,m,m,b,m,a,p,p,a,p,b)
+#a = [a]
+#b = [b]
 
 def run(seq):
     global numLines
     for i in seq:
         if isinstance(i, Iterable):
+            
             run(i)
         else:
             if not (numLines % 800):
@@ -36,6 +48,23 @@ def run(seq):
             numLines += 1
             i()
 
+            
+def gen(level, seq=a_seq):
+    if level == 1:
+        for i in seq:
+            yield i
+        return None
+    if level == 2:
+        t.color(next(color))
+    for i in seq:
+        if i is m or i is p:
+            yield i
+        elif i is a:
+            yield from gen(level-1)
+        else:
+            yield from gen(level-1, b_seq)
+            
+    
 def step(num):
     global a
     global b
@@ -47,10 +76,6 @@ def step(num):
 #    run(b)
 
 def reset():
-    global a
-    global b
-    t.goto(300,300)
+    t.goto(350,350)
     t.clear()
-    a = [f]
-    b = [b]
     
