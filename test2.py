@@ -9,39 +9,49 @@ import turtle as t
 from collections import Iterable
 from itertools import cycle
 
-side = 7
-
 numLines = 0;
 
 colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet',
           'blue violet', 'brown', 'burlywood', 'dark green', 'gold',
           'lavender']
 
-color = cycle(colors)
+class Gosper: 
+    
 
-a = lambda : t.forward(side)
-p = lambda : t.left(60)
-m = lambda : t.left(-60)
-b = lambda : t.forward(side)
-
-a_seq = (a,m,b,m,m,b,p,a,p,p,a,a,p,b,m)
-b_seq = (p,a,m,b,b,m,m,b,m,a,p,p,a,p,b)
-          
-def gen(level, seq=a_seq):
-    if level == 1:
+    
+    def __init__(self, sideLength=7):
+        self.sideLength = sideLength
+        self.color = cycle(colors)
+        t.color(next(self.color))
+        self.a = lambda sideLength : t.forward(sideLength)
+        self.p = lambda _ : t.left(60)
+        self.m = lambda _ : t.left(-60)
+        self.b = lambda sideLength : t.forward(sideLength)
+        self.a_seq = (self.a,self.m,self.b,self.m,self.m,self.b,self.p,self.a,self.p,self.p,self.a,self.a,self.p,self.b,self.m)
+        self.b_seq = (self.p,self.a,self.m,self.b,self.b,self.m,self.m,self.b,self.m,self.a,self.p,self.p,self.a,self.p,self.b)
+              
+    def gosper_curve_gen(self, level, seq):
+        print(level)
+        if level == 1:
+            for i in seq:
+                yield i
+            return None
+        if level == 2:
+            t.color(next(self.color))
         for i in seq:
-            yield i
-        return None
-    if level == 2:
-        t.color(next(color))
-    for i in seq:
-        if i is m or i is p:
-            yield i
-        elif i is a:
-            yield from gen(level-1)
-        else:
-            yield from gen(level-1, b_seq)
-
+            if i is self.a:
+                print('Is a')
+                yield from self.gosper_curve_gen(level-1, self.a_seq)
+            elif i is self.b:
+                print('Is b')
+                yield from self.gosper_curve_gen(level-1, self.b_seq)
+            else:
+                print('Not')
+                yield i
+    def __call__(self, level):
+        for i in self.gosper_curve_gen(level, self.a_seq):
+            i(self.sideLength)
+            
 def reset():
     t.goto(350,350)
     t.clear()
