@@ -24,31 +24,9 @@ p = lambda : t.left(60)
 m = lambda : t.left(-60)
 b = lambda : t.forward(side)
 
-#a = lambda : print('a', end=', ')
-#b = lambda : print('b', end=', ')
-#m = lambda : print('m', end=', ')
-#p = lambda : print('p', end=', ')
-
-#a_seq = ('a','m','b','m','m','b','p','a','p','p','a','a','p','b','m')
-#b_seq = ('p','a','m','b','b','m','m','b','m','a','p','p','a','p','b')
 a_seq = (a,m,b,m,m,b,p,a,p,p,a,a,p,b,m)
 b_seq = (p,a,m,b,b,m,m,b,m,a,p,p,a,p,b)
-#a = [a]
-#b = [b]
-
-def run(seq):
-    global numLines
-    for i in seq:
-        if isinstance(i, Iterable):
-            
-            run(i)
-        else:
-            if not (numLines % 800):
-                t.color(next(color))
-            numLines += 1
-            i()
-
-            
+          
 def gen(level, seq=a_seq):
     if level == 1:
         for i in seq:
@@ -63,17 +41,6 @@ def gen(level, seq=a_seq):
             yield from gen(level-1)
         else:
             yield from gen(level-1, b_seq)
-            
-    
-def step(num):
-    global a
-    global b
-    for i in range(num):
-        c = [a,m,b,m,m,b,p,a,p,p,a,a,p,b,m]
-        d = [p,a,m,b,b,m,m,b,m,a,p,p,a,p,b]
-        a,b = c,d
-    run(a)
-#    run(b)
 
 def reset():
     t.goto(350,350)
