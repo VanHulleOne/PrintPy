@@ -45,7 +45,8 @@ class SpaceCurve:
                 yield i
                 
     def __call__(self, level):
-        for i in self.curve_gen(level):
+        cls = type(self)
+        for i in self.curve_gen(level, cls.axiom):
             i(self.sideLength)
     
 class Gosper(SpaceCurve):
@@ -56,6 +57,7 @@ class Gosper(SpaceCurve):
     
     a_seq = (a,m,b,m,m,b,p,a,p,p,a,a,p,b,m)
     b_seq = (p,a,m,b,b,m,m,b,m,a,p,p,a,p,b)
+    axiom = (a,)
     
 
 class Hilbert(SpaceCurve):
@@ -67,6 +69,7 @@ class Hilbert(SpaceCurve):
     
     a_seq = (m,b,f,p,a,f,a,p,f,b,m)
     b_seq = (p,a,f,m,b,f,b,m,f,a,p)
+    axiom = (a,)
 
 class Moore(SpaceCurve):
     a = lambda _ : None
@@ -77,4 +80,5 @@ class Moore(SpaceCurve):
     
     a_seq = (m,b,f,p,a,f,a,p,f,b,m)
     b_seq = (p,a,f,m,b,f,b,m,f,a,p)
+    axiom = (a,f,a,p,f,p,a,f,a)
                   
