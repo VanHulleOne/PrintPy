@@ -27,6 +27,7 @@ class SpaceCurve:
         self.sideLength = sideLength
         self.color = cycle(colors)
         t.color(next(self.color))
+        self.store = []
         
     def curve_gen(self, level, seq):
         cls = type(self)
@@ -47,7 +48,7 @@ class SpaceCurve:
     def __call__(self, level):
         cls = type(self)
         for i in self.curve_gen(level, cls.axiom):
-            i(self.sideLength)
+            i(self, self.sideLength)
     
 class Gosper(SpaceCurve):
     rules = {'a' : 'a-b--b+a++aa+b-',
@@ -86,4 +87,52 @@ class Moore(SpaceCurve):
              }
 
     axiom = 'lfl+f+lfl'
-                  
+
+class SierpArrow(SpaceCurve):
+    consts = {'a' : lambda sideLength : t.forward(sideLength),
+              'b' : lambda sideLength : t.forward(sideLength),
+              '+' : lambda _ : t.left(60),
+              '-' : lambda _ : t.left(-60),
+              }
+              
+    rules = {'a' : '+b-a-b+',
+             'b' : '-a+b+a-',
+             }
+             
+    axiom = 'a'
+
+class Dragon(SpaceCurve):
+    consts = {'f' : lambda sideLength : t.forward(sideLength),
+              '+' : lambda _ : t.right(90),
+              '-' : lambda _ : t.right(-90),
+              }
+    rules = {'x' : 'x+yf+',
+             'y' : '-fx-y',
+             }
+             
+    axiom = 'fx'
+
+class Plant(SpaceCurve):
+    def left_bracket(self, _):
+        pos = t.position()
+        heading = t.heading()
+        self.store.append((pos,heading))
+        
+    def right_bracket(self, _):
+        t.up()
+        pos, heading = self.store.pop()
+        t.setposition(pos)
+        t.setheading(heading)
+        t.down()
+    consts = {'f' : lambda _, sideLength : t.forward(sideLength),
+              '+' : lambda s, _ : t.right(25),
+              '-' : lambda s, _ : t.right(-25),
+              '[' : left_bracket,
+              ']' : right_bracket,
+              }   
+              
+    rules = {'x': 'f-[[x]+x]+f[+fx]-x',
+             'f' : 'ff',
+             }
+             
+    axiom = 'x'
