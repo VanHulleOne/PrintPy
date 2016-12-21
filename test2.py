@@ -67,4 +67,14 @@ class Hilbert(SpaceCurve):
     
     a_seq = (m,b,f,p,a,f,a,p,f,b,m)
     b_seq = (p,a,f,m,b,f,b,m,f,a,p)
-                   
+
+class Moore(SpaceCurve):
+    a = lambda _ : None
+    b = lambda _ : None
+    f = lambda sideLength : t.forward(sideLength)
+    p = lambda _ : t.left(90)
+    m = lambda _ : t.left(-90)
+    
+    a_seq = (m,b,f,p,a,f,a,p,f,b,m)
+    b_seq = (p,a,f,m,b,f,b,m,f,a,p)
+                  
