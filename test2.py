@@ -20,73 +20,74 @@ def reset():
 class SpaceCurve:
     
     rules = NotImplemented
-    consts = NotImplemented
     axiom = NotImplemented
     
-    def __init__(self, sideLength=7):
-        self.sideLength = sideLength
+    def __init__(self):
         self.color = cycle(colors)
         t.color(next(self.color))
-        self.store = []
         
     def curve_gen(self, level, seq):
-        cls = type(self)
-
         if level == 1:
             for i in seq:
-                if i in cls.consts:
-                    yield cls.consts[i]
+                if i in self.consts:
+                    yield self.consts[i]
             return None
         if level == 2:
             t.color(next(self.color))
         for i in seq:
-            if i in cls.rules:
-                yield from self.curve_gen(level-1, cls.rules[i])
-            elif i in cls.consts:
-                yield cls.consts[i]
+            if i in self.rules:
+                yield from self.curve_gen(level-1, self.rules[i])
+            elif i in self.consts:
+                yield self.consts[i]
                 
     def __call__(self, level):
-        cls = type(self)
-        for i in self.curve_gen(level, cls.axiom):
-            i(self, self.sideLength)
+        for i in self.curve_gen(level, self.axiom):
+            i()
     
 class Gosper(SpaceCurve):
     rules = {'a' : 'a-b--b+a++aa+b-',
             'b' : '+a-bb--b-a++a+b',
             }
-            
-    consts = {'a' : lambda sideLength : t.forward(sideLength),
-              '+' : lambda _ : t.left(60),
-              '-' : lambda _ : t.left(-60),
-              'b' : lambda sideLength : t.forward(sideLength),
-              }
 
     axiom = 'a'
     
+    def __init__(self, sideLength=7):
+        super().__init__()
+        self.consts = {'a' : lambda : t.forward(sideLength),
+                       '+' : lambda : t.left(60),
+                       '-' : lambda : t.left(-60),
+                       'b' : lambda : t.forward(sideLength),
+                       }
 
 class Hilbert(SpaceCurve):
-    consts = {'f' : lambda sideLength : t.forward(sideLength),
-              '+' : lambda _ : t.right(90),
-              '-' : lambda _ : t.right(-90),
-              }
     
     rules = {'a' : '-bf+afa+fb-',
              'b' : '+af-bfb-fa+',
              }
 
     axiom = 'a'
+    
+    def __init__(self, sideLength=7):
+        super().__init__()
+        self.consts = {'f' : lambda : t.forward(sideLength),
+                       '+' : lambda : t.right(90),
+                       '-' : lambda : t.right(-90),
+                       }
 
 class Moore(SpaceCurve):
-    consts = {'f' : lambda sideLength : t.forward(sideLength),
-              '+' : lambda _ : t.left(90),
-              '-' : lambda _ : t.left(-90),
-              }
               
     rules = {'l' : '-rf+lfl+fr-',
              'r' : '+lf-rfr-fl+',
              }
 
     axiom = 'lfl+f+lfl'
+
+    def __init__(self, sideLength=7):
+        super().__init__()
+        self.consts = {'f' : lambda : t.forward(sideLength),
+                       '+' : lambda : t.left(90),
+                       '-' : lambda : t.left(-90),
+                       }
 
 class SierpArrow(SpaceCurve):
     consts = {'a' : lambda sideLength : t.forward(sideLength),
@@ -100,39 +101,62 @@ class SierpArrow(SpaceCurve):
              }
              
     axiom = 'a'
+    
+    def __init__(self, sideLength=7):
+        super().__init__()
+        self.consts = {'a' : lambda : t.forward(sideLength),
+                       'b' : lambda : t.forward(sideLength),
+                       '+' : lambda : t.left(60),
+                       '-' : lambda : t.left(-60),
+                       }
 
 class Dragon(SpaceCurve):
-    consts = {'f' : lambda sideLength : t.forward(sideLength),
-              '+' : lambda _ : t.right(90),
-              '-' : lambda _ : t.right(-90),
-              }
     rules = {'x' : 'x+yf+',
              'y' : '-fx-y',
              }
              
     axiom = 'fx'
+    
+    def __init__(self, sideLength=7):
+        super().__init__()
+        self.consts = {'f' : lambda : t.forward(sideLength),
+                       '+' : lambda : t.right(90),
+                       '-' : lambda : t.right(-90),
+                       }
 
 class Plant(SpaceCurve):
-    def left_bracket(self, _):
-        pos = t.position()
-        heading = t.heading()
-        self.store.append((pos,heading))
+    def left_bracket(stack):
+        def inner():
+            pos = t.position()
+            heading = t.heading()
+            stack.append((pos,heading))
+        return inner
         
-    def right_bracket(self, _):
-        t.up()
-        pos, heading = self.store.pop()
-        t.setposition(pos)
-        t.setheading(heading)
-        t.down()
-    consts = {'f' : lambda _, sideLength : t.forward(sideLength),
-              '+' : lambda s, _ : t.right(25),
-              '-' : lambda s, _ : t.right(-25),
-              '[' : left_bracket,
-              ']' : right_bracket,
-              }   
+    def right_bracket(stack):
+        def inner():
+            t.up()
+            pos, heading = stack.pop()
+            t.setposition(pos)
+            t.setheading(heading)
+            t.down()
+        return inner
               
-    rules = {'x': 'f-[[x]+x]+f[+fx]-x',
+    rules = {'x' : 'f-[[x]+x]+f[+fx]-x',
              'f' : 'ff',
              }
              
     axiom = 'x'
+    
+    def __init__(self, sideLength=7):
+        super().__init__()
+        self.color = cycle(['green'])
+        t.width(3)
+        t.setheading(45)
+        self.stack = []
+        self.consts = {'f' : lambda : t.forward(sideLength),
+                       '+' : lambda : t.right(25),
+                       '-' : lambda : t.right(-25),
+                       '[' : Plant.left_bracket(self.stack),
+                       ']' : Plant.right_bracket(self.stack),
+                        }   
+
