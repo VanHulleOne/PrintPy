@@ -27,15 +27,10 @@ class SpaceCurve:
         t.color(next(self.color))
         
     def curve_gen(self, level, seq):
-        if level == 1:
-            for i in seq:
-                if i in self.consts:
-                    yield self.consts[i]
-            return None
         if level == 2:
             t.color(next(self.color))
         for i in seq:
-            if i in self.rules:
+            if level != 1 and i in self.rules:
                 yield from self.curve_gen(level-1, self.rules[i])
             elif i in self.consts:
                 yield self.consts[i]
@@ -46,8 +41,8 @@ class SpaceCurve:
     
 class Gosper(SpaceCurve):
     rules = {'a' : 'a-b--b+a++aa+b-',
-            'b' : '+a-bb--b-a++a+b',
-            }
+             'b' : '+a-bb--b-a++a+b',
+             }
 
     axiom = 'a'
     
@@ -159,4 +154,38 @@ class Plant(SpaceCurve):
                        '[' : Plant.left_bracket(self.stack),
                        ']' : Plant.right_bracket(self.stack),
                         }   
-
+class Fig124e(SpaceCurve):
+    def left_bracket(stack):
+        def inner():
+            pos = t.position()
+            heading = t.heading()
+            stack.append((pos,heading))
+        return inner
+        
+    def right_bracket(stack):
+        def inner():
+            t.up()
+            pos, heading = stack.pop()
+            t.setposition(pos)
+            t.setheading(heading)
+            t.down()
+        return inner
+        
+    rules = {'x' : 'f[+x][-x]fx',
+             'f' : 'ff',
+             }
+             
+    axiom = 'x'
+    
+    def __init__(self, sideLength=7):
+        super().__init__()
+        self.color = cycle(['green'])
+        t.width(2)
+        t.setheading(90)
+        self.stack = []
+        self.consts = {'f' : lambda : t.forward(sideLength),
+                       '+' : lambda : t.right(25.7),
+                       '-' : lambda : t.right(-25.7),
+                       '[' : Fig124e.left_bracket(self.stack),
+                       ']' : Fig124e.right_bracket(self.stack),
+                        }
